@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Response, status
+from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse, PlainTextResponse
 from CalcEngine import CalcEngine
 
@@ -6,8 +6,12 @@ app = FastAPI()
 engine = CalcEngine()
 
 @app.get("/", include_in_schema=False)
-async def method_not_found():
-    return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
+async def root():
+    return PlainTextResponse("Nothing here to see")
+
+@app.get("/health", include_in_schema=False)
+async def health():
+    return JSONResponse({"status": "ok"})
 
 @app.post("/solve")
 async def solve(request: Request):
@@ -23,8 +27,10 @@ async def solve(request: Request):
 
 @app.middleware("http")
 async def block_invalid_methods(request: Request, call_next):
-    if request.url.path not in ["/solve"]:
-        return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
-    if request.method != "POST" and request.url.path == "/solve":
-        return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
-    return await call_next(request)
+    if request.url.path == "/solve":
+        if request.method != "POST":
+            return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
+        return await call_next(request)
+    if request.url.path in ["/", "/health"]:
+        return await call_next(request)
+    return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
