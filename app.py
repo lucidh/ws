@@ -12,7 +12,7 @@ async def method_not_found():
 @app.post("/solve")
 async def solve(request: Request):
     content_type = request.headers.get("content-type")
-    if content_type != "application/bson":
+    if content_type != "application/Json":
         return JSONResponse(
             {"error": "<METHOD_NOT_FOUND>"},
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
