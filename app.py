@@ -9,7 +9,7 @@ engine = CalcEngine()
 async def root():
     return PlainTextResponse("Nothing here to see")
 
-@app.get("/health", include_in_schema=False)
+@app.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
 async def health():
     return JSONResponse({"status": "ok"})
 
@@ -18,7 +18,7 @@ async def solve(request: Request):
     content_type = request.headers.get("content-type")
     if content_type != "application/json":
         return JSONResponse(
-            {"error": "<METHOD_NOT_FOUND>"},
+            {"error": "METHOD_NOT_FOUND"},
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
         )
 
@@ -29,8 +29,8 @@ async def solve(request: Request):
 async def block_invalid_methods(request: Request, call_next):
     if request.url.path == "/solve":
         if request.method != "POST":
-            return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
+            return PlainTextResponse("METHOD_NOT_FOUND", status_code=405)
         return await call_next(request)
     if request.url.path in ["/", "/health"]:
         return await call_next(request)
-    return PlainTextResponse("<METHOD_NOT_FOUND>", status_code=405)
+    return PlainTextResponse("METHOD_NOT_FOUND", status_code=405)
