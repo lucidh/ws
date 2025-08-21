@@ -3,57 +3,59 @@
   "title": "MovieStarGo Login",
   "root": {
     "kind": "vbox",
+    "alignment": "center",
+    "spacing": 12,
     "children": [
       {
-        "kind": "image",
-        "id": "logo",
-        "src": "assets/logo.png",
-        "width": 520
-      },
-      {
-        "kind": "label",
-        "id": "spacer1",
-        "text": ""
-      },
-      {
         "kind": "vbox",
+        "id": "card",
+        "style": {
+          "background": "rgba(255,255,255,0.28)",
+          "cornerRadius": 18,
+          "padding": 16
+        },
         "children": [
+          {
+            "kind": "image",
+            "id": "logo",
+            "src": "assets/logo.png",
+            "width": 180,
+            "mode": "contain"
+          },
           {
             "kind": "lineedit",
             "id": "username",
             "placeholder": "Username"
           },
           {
-            "kind": "hbox",
-            "children": [
-              {
-                "kind": "lineedit",
-                "id": "password",
-                "placeholder": "Password"
-              },
-              {
-                "kind": "button",
-                "id": "togglePwd",
-                "text": "👁"
-              }
-            ]
+            "kind": "lineedit",
+            "id": "password",
+            "placeholder": "Password",
+            "echoMode": "password"
           },
           {
-            "kind": "lineedit",
+            "kind": "dropdown",
             "id": "server",
-            "placeholder": "Select Server"
+            "placeholder": "Select Server",
+            "options": [
+              "US", "CA", "AU", "NZ",
+              "GB", "DE", "FR", "TR",
+              "SE", "DK", "FI", "PL",
+              "IE", "ES", "NL", "NO"
+            ]
           },
           {
             "kind": "button",
             "id": "loginBtn",
             "text": "Login"
+          },
+          {
+            "kind": "label",
+            "id": "status",
+            "text": "",
+            "style": { "fontSize": 14, "bold": true, "alignment": "center" }
           }
         ]
-      },
-      {
-        "kind": "label",
-        "id": "status",
-        "text": ""
       }
     ]
   }
