@@ -1,0 +1,39 @@
+{
+  "Services": [
+    {
+      "Id": "WebService",
+      "Version": "1.0.0",
+      "Endpoint": "https://psk.onrender.com/Build/Release/1.0.0/"
+    },
+    {
+      "Id": "WebServiceBeta",
+      "Version": "1.0.1-26B2461f",
+      "Endpoint": "https://psk.onrender.com/Build/Release/1.0.1-26B2461f/"
+    },
+    {
+      "Id": "solver",
+      "Version": "1",
+      "Endpoint": "https://psk.onrender.com/solve"
+    },
+    {
+      "Id": "ui",
+      "Version": "1",
+      "Endpoint": "wss://psk.onrender.com/Build/Release/{version}/ui"
+    },
+    {
+      "Id": "assets",
+      "Version": "1",
+      "Endpoint": "https://psk.onrender.com/Build/Release/{version}/assets/{path:path}"
+    },
+    {
+      "Id": "health",
+      "Version": "1",
+      "Endpoint": "https://psk.onrender.com/health"
+    },
+    {
+      "Id": "root",
+      "Version": "1",
+      "Endpoint": "https://psk.onrender.com/"
+    }
+  ]
+}
