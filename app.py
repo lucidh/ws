@@ -70,7 +70,6 @@ async def release_services(version: str, request: Request, services: str | None 
             continue
         ep = normalize(e["Endpoint"], request, version)
         if sid == "assets":
-            ep = ep.split("{path:path}", 1)[0]
             if not ep.endswith("/"):
                 ep += "/"
             out[sid] = {"id": e["Id"], "version": e["Version"], "endpoint": ep, "prefix": ep}
@@ -78,12 +77,12 @@ async def release_services(version: str, request: Request, services: str | None 
             out[sid] = {"id": e["Id"], "version": e["Version"], "endpoint": ep}
     return JSONResponse({"bundle": version, "services": out})
 
-@app.get("/Build/Release/{version}/assets/{path:path}")
+@app.get("/Build/Release/{version}/Streamables/assets/{path:path}")
 async def get_asset(version: str, path: str):
     base = find_streamables(version)
     if not base:
         return PlainTextResponse("not found", status_code=404)
-    full = os.path.join(base, path)
+    full = os.path.join(base, "assets", path)
     if not os.path.isfile(full):
         return PlainTextResponse("not found", status_code=404)
     if full.endswith(".json") or full.endswith(".js"):
@@ -119,24 +118,8 @@ async def instance_ws(version: str, ws: WebSocket):
     try:
         if os.path.isfile(ui_file):
             with open(ui_file, "r", encoding="utf-8") as f:
-                spec = f.read().replace("{version}", version)
-            try:
-                spec_json = json.loads(spec)
-                def fix_paths(node):
-                    if isinstance(node, dict):
-                        if node.get("kind") == "image" and "src" in node:
-                            src = node["src"]
-                            if src.startswith(f"/Build/Release/{version}/assets/"):
-                                node["src"] = "assets/" + src.split("/assets/",1)[1]
-                        for v in node.values():
-                            fix_paths(v)
-                    elif isinstance(node, list):
-                        for v in node: fix_paths(v)
-                fix_paths(spec_json)
-                spec = json.dumps(spec_json)
-            except Exception:
-                pass
-            await ws.send_text(spec)
+                spec_text = f.read().replace("{version}", version)
+            await ws.send_text(spec_text)
         state = {"payload": ""}
         while True:
             msg = await ws.receive_text()
@@ -162,4 +145,3 @@ async def instance_ws(version: str, ws: WebSocket):
                 await ws.send_text(json.dumps({"type": "patch", "ops": ops}))
     except WebSocketDisconnect:
         pass
-
