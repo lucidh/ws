@@ -16,9 +16,9 @@
       "Endpoint": "https://psk.onrender.com/solve"
     },
     {
-      "Id": "ui",
+      "Id": "WebSocketInstance",
       "Version": "1",
-      "Endpoint": "wss://psk.onrender.com/Build/Release/{version}/ui"
+      "Endpoint": "wss://psk.onrender.com/Build/Release/{version}/instance"
     },
     {
       "Id": "assets",
