@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from CalcEngine import CalcEngine
 import json, os
 from urllib.parse import urlparse
+import mimetypes
 
 app = FastAPI()
 engine = CalcEngine()
@@ -37,10 +38,7 @@ async def health():
 @app.post("/solve")
 async def solve(request: Request):
     if request.headers.get("content-type") != "application/json":
-        return JSONResponse(
-            {"error": "METHOD_NOT_FOUND"},
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-        )
+        return JSONResponse({"error": "METHOD_NOT_FOUND"}, status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
     body = await request.body()
     return {"signature": engine.solve(body)}
 
@@ -72,6 +70,13 @@ async def get_asset(version: str, path: str):
     full = os.path.join(base, path)
     if not os.path.isfile(full):
         return PlainTextResponse("not found", status_code=404)
+    if full.endswith(".json") or full.endswith(".js"):
+        with open(full, "r", encoding="utf-8") as f:
+            text = f.read().replace("{version}", version)
+        media_type = "application/json" if full.endswith(".json") else "application/javascript"
+        return PlainTextResponse(text, media_type=media_type)
+    guessed, _ = mimetypes.guess_type(full)
+    media = guessed or "application/octet-stream"
     def gen():
         with open(full, "rb") as f:
             while True:
@@ -79,4 +84,4 @@ async def get_asset(version: str, path: str):
                 if not b:
                     break
                 yield b
-    return StreamingResponse(gen(), media_type="application/octet-stream")
+    return StreamingResponse(gen(), media_type=media)
