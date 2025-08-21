@@ -23,7 +23,7 @@
     {
       "Id": "assets",
       "Version": "1",
-      "Endpoint": "https://psk.onrender.com/Build/Release/{version}/assets/{path:path}"
+      "Endpoint": "https://psk.onrender.com/Build/Release/{version}/Streamables/assets/"
     },
     {
       "Id": "health",
