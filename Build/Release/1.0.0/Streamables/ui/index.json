@@ -1,40 +1,59 @@
 {
   "type": "full",
-  "title": "MovieStarGo",
+  "title": "MovieStarGo Login",
   "root": {
     "kind": "vbox",
-    "spacing": 12,
     "children": [
-      {
-        "kind": "label",
-        "id": "status",
-        "text": "Ready",
-        "style": { "fontSize": 16, "bold": true }
-      },
-      {
-        "kind": "hbox",
-        "spacing": 8,
-        "children": [
-          {
-            "kind": "lineedit",
-            "id": "payload",
-            "placeholder": "Enter JSON payload",
-            "expand": true
-          },
-          {
-            "kind": "button",
-            "id": "solveBtn",
-            "text": "Solve"
-          }
-        ]
-      },
       {
         "kind": "image",
         "id": "logo",
         "src": "assets/logo.png",
-        "width": 160,
-        "height": 160,
-        "mode": "contain"
+        "width": 520
+      },
+      {
+        "kind": "label",
+        "id": "spacer1",
+        "text": ""
+      },
+      {
+        "kind": "vbox",
+        "children": [
+          {
+            "kind": "lineedit",
+            "id": "username",
+            "placeholder": "Username"
+          },
+          {
+            "kind": "hbox",
+            "children": [
+              {
+                "kind": "lineedit",
+                "id": "password",
+                "placeholder": "Password"
+              },
+              {
+                "kind": "button",
+                "id": "togglePwd",
+                "text": "👁"
+              }
+            ]
+          },
+          {
+            "kind": "lineedit",
+            "id": "server",
+            "placeholder": "Select Server"
+          },
+          {
+            "kind": "button",
+            "id": "loginBtn",
+            "text": "Login"
+          }
+        ]
+      },
+      {
+        "kind": "label",
+        "id": "status",
+        "text": ""
       }
     ]
   }
