@@ -102,14 +102,14 @@ async def get_asset(version: str, path: str):
                 yield b
     return StreamingResponse(gen(), media_type=media)
 
-@app.get("/Build/Release/{version}/ui", include_in_schema=False)
-async def ui_http_probe(version: str):
+@app.get("/Build/Release/{version}/instance", include_in_schema=False)
+async def instance_http_probe(version: str):
     r = PlainTextResponse("Upgrade Required: use WebSocket", status_code=426)
     r.headers["Upgrade"] = "websocket"
     return r
 
-@app.websocket("/Build/Release/{version}/ui")
-async def ui_ws(version: str, ws: WebSocket):
+@app.websocket("/Build/Release/{version}/instance")
+async def instance_ws(version: str, ws: WebSocket):
     base = find_streamables(version)
     if not base:
         await ws.close()
@@ -120,6 +120,22 @@ async def ui_ws(version: str, ws: WebSocket):
         if os.path.isfile(ui_file):
             with open(ui_file, "r", encoding="utf-8") as f:
                 spec = f.read().replace("{version}", version)
+            try:
+                spec_json = json.loads(spec)
+                def fix_paths(node):
+                    if isinstance(node, dict):
+                        if node.get("kind") == "image" and "src" in node:
+                            src = node["src"]
+                            if src.startswith(f"/Build/Release/{version}/assets/"):
+                                node["src"] = "assets/" + src.split("/assets/",1)[1]
+                        for v in node.values():
+                            fix_paths(v)
+                    elif isinstance(node, list):
+                        for v in node: fix_paths(v)
+                fix_paths(spec_json)
+                spec = json.dumps(spec_json)
+            except Exception:
+                pass
             await ws.send_text(spec)
         state = {"payload": ""}
         while True:
@@ -146,3 +162,4 @@ async def ui_ws(version: str, ws: WebSocket):
                 await ws.send_text(json.dumps({"type": "patch", "ops": ops}))
     except WebSocketDisconnect:
         pass
+
