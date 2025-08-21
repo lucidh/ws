@@ -102,6 +102,12 @@ async def get_asset(version: str, path: str):
                 yield b
     return StreamingResponse(gen(), media_type=media)
 
+@app.get("/Build/Release/{version}/ui", include_in_schema=False)
+async def ui_http_probe(version: str):
+    r = PlainTextResponse("Upgrade Required: use WebSocket", status_code=426)
+    r.headers["Upgrade"] = "websocket"
+    return r
+
 @app.websocket("/Build/Release/{version}/ui")
 async def ui_ws(version: str, ws: WebSocket):
     base = find_streamables(version)
