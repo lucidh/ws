@@ -1,9 +1,8 @@
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from CalcEngine import CalcEngine
-import json, os
+import json, os, mimetypes
 from urllib.parse import urlparse
-import mimetypes
 
 app = FastAPI()
 engine = CalcEngine()
@@ -26,6 +25,18 @@ def normalize(ep: str, request: Request, version: str) -> str:
         sch = "wss" if u.scheme in ("ws", "wss") and request.url.scheme == "https" else ("ws" if u.scheme in ("ws", "wss") else ("https" if request.url.scheme == "https" else "http"))
         return f"{sch}://{request.url.netloc}{u.path}"
     return f"{origin(request)}{ep}"
+
+def find_streamables(version: str) -> str | None:
+    candidates = [
+        os.path.join("Build", "Release", version, "Streamables"),
+        os.path.join("Build", f"Release_{version}", "Streamables"),
+        os.path.join("Build", version, "Streamables"),
+        os.path.join("Release", version, "Streamables")
+    ]
+    for b in candidates:
+        if os.path.isdir(b):
+            return b
+    return None
 
 @app.get("/", include_in_schema=False)
 async def root():
@@ -57,16 +68,21 @@ async def release_services(version: str, request: Request, services: str | None 
     for sid, e in SERVICES_BY_ID.items():
         if svc_list and sid not in svc_list:
             continue
-        out[sid] = {
-            "id": e["Id"],
-            "version": e["Version"],
-            "endpoint": normalize(e["Endpoint"], request, version)
-        }
+        ep = normalize(e["Endpoint"], request, version)
+        if sid == "assets":
+            ep = ep.split("{path:path}", 1)[0]
+            if not ep.endswith("/"):
+                ep += "/"
+            out[sid] = {"id": e["Id"], "version": e["Version"], "endpoint": ep, "prefix": ep}
+        else:
+            out[sid] = {"id": e["Id"], "version": e["Version"], "endpoint": ep}
     return JSONResponse({"bundle": version, "services": out})
 
 @app.get("/Build/Release/{version}/assets/{path:path}")
 async def get_asset(version: str, path: str):
-    base = os.path.join("Build", "Release", version, "Streamables")
+    base = find_streamables(version)
+    if not base:
+        return PlainTextResponse("not found", status_code=404)
     full = os.path.join(base, path)
     if not os.path.isfile(full):
         return PlainTextResponse("not found", status_code=404)
