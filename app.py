@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 from CalcEngine import CalcEngine
 import json, os, mimetypes
@@ -101,3 +101,42 @@ async def get_asset(version: str, path: str):
                     break
                 yield b
     return StreamingResponse(gen(), media_type=media)
+
+@app.websocket("/Build/Release/{version}/ui")
+async def ui_ws(version: str, ws: WebSocket):
+    base = find_streamables(version)
+    if not base:
+        await ws.close()
+        return
+    ui_file = os.path.join(base, "ui", "index.json")
+    await ws.accept()
+    try:
+        if os.path.isfile(ui_file):
+            with open(ui_file, "r", encoding="utf-8") as f:
+                spec = f.read().replace("{version}", version)
+            await ws.send_text(spec)
+        state = {"payload": ""}
+        while True:
+            msg = await ws.receive_text()
+            try:
+                data = json.loads(msg)
+            except Exception:
+                continue
+            ev = data.get("event")
+            wid = data.get("id")
+            val = data.get("value")
+            if ev == "textChanged" and wid == "payload":
+                state["payload"] = val or ""
+            elif ev == "clicked" and wid == "solveBtn":
+                body = (state.get("payload") or "").encode("utf-8")
+                try:
+                    sig = engine.solve(body)
+                    ops = [
+                        {"op": "set", "id": "status", "prop": "text", "value": f"signature: {sig}"},
+                        {"op": "set", "id": "solveBtn", "prop": "enabled", "value": False}
+                    ]
+                except Exception:
+                    ops = [{"op": "set", "id": "status", "prop": "text", "value": "error"}]
+                await ws.send_text(json.dumps({"type": "patch", "ops": ops}))
+    except WebSocketDisconnect:
+        pass
