@@ -11,11 +11,6 @@
       "Endpoint": "https://moviestargo.app/Build/Release/1.0.1-26B2461f/"
     },
     {
-      "Id": "solver",
-      "Version": "1",
-      "Endpoint": "https://moviestargo.app/solve"
-    },
-    {
       "Id": "WebSocketInstance",
       "Version": "1",
       "Endpoint": "wss://moviestargo.app/Build/Release/{version}/instance"
@@ -29,11 +24,6 @@
       "Id": "health",
       "Version": "1",
       "Endpoint": "https://moviestargo.app/health"
-    },
-    {
-      "Id": "root",
-      "Version": "1",
-      "Endpoint": "https://moviestargo.app/"
     }
   ]
 }
