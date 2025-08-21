@@ -3,37 +3,37 @@
     {
       "Id": "WebService",
       "Version": "1.0.0",
-      "Endpoint": "https://psk.onrender.com/Build/Release/1.0.0/"
+      "Endpoint": "https://moviestargo.app/Build/Release/1.0.0/"
     },
     {
       "Id": "WebServiceBeta",
       "Version": "1.0.1-26B2461f",
-      "Endpoint": "https://psk.onrender.com/Build/Release/1.0.1-26B2461f/"
+      "Endpoint": "https://moviestargo.app/Build/Release/1.0.1-26B2461f/"
     },
     {
       "Id": "solver",
       "Version": "1",
-      "Endpoint": "https://psk.onrender.com/solve"
+      "Endpoint": "https://moviestargo.app/solve"
     },
     {
       "Id": "WebSocketInstance",
       "Version": "1",
-      "Endpoint": "wss://psk.onrender.com/Build/Release/{version}/instance"
+      "Endpoint": "wss://moviestargo.app/Build/Release/{version}/instance"
     },
     {
       "Id": "assets",
       "Version": "1",
-      "Endpoint": "https://psk.onrender.com/Build/Release/{version}/Streamables/assets/"
+      "Endpoint": "https://moviestargo.app/Build/Release/{version}/Streamables/assets/"
     },
     {
       "Id": "health",
       "Version": "1",
-      "Endpoint": "https://psk.onrender.com/health"
+      "Endpoint": "https://moviestargo.app/health"
     },
     {
       "Id": "root",
       "Version": "1",
-      "Endpoint": "https://psk.onrender.com/"
+      "Endpoint": "https://moviestargo.app/"
     }
   ]
 }
